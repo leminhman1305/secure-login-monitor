@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nhật ký bảo mật</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+
+    <style>
+        .security-page {
+            max-width: 1200px;
+            margin: auto;
+            padding: 40px 24px;
+        }
+
+        .security-nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 18px;
+            margin-bottom: 28px;
+        }
+
+        .security-nav a {
+            color: #67e8f9;
+        }
+
+        .security-note {
+            color: #a6b4ca;
+            line-height: 1.7;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin: 24px 0;
+        }
+
+        .stat {
+            padding: 20px;
+            background: #111c30;
+            border: 1px solid #29374e;
+            border-radius: 12px;
+        }
+
+        .stat span {
+            color: #a6b4ca;
+            font-size: 14px;
+        }
+
+        .stat strong {
+            display: block;
+            margin-top: 12px;
+            color: #f1f5f9;
+            font-size: 30px;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            border: 1px solid #29374e;
+            border-radius: 12px;
+            background: #111c30;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            color: #e8edf7;
+        }
+
+        caption {
+            padding: 18px;
+            text-align: left;
+            color: #a6b4ca;
+        }
+
+        th,
+        td {
+            padding: 14px 16px;
+            border-bottom: 1px solid #29374e;
+            font-size: 13px;
+            vertical-align: top;
+        }
+
+        th {
+            color: #a6b4ca;
+        }
+
+        .event {
+            display: inline-block;
+            padding: 5px 8px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+
+        .event-success {
+            background: #123b30;
+            color: #6ee7b7;
+        }
+
+        .event-failure {
+            background: #442a18;
+            color: #fdba74;
+        }
+
+        .event-alert,
+        .event-blocked {
+            background: #441d2a;
+            color: #fda4af;
+        }
+
+        @media (max-width: 700px) {
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <main class="security-page">
+        <nav class="security-nav" aria-label="Điều hướng">
+            <a href="{{ url_for('dashboard') }}">
+                ← Trang tài khoản
+            </a>
+
+            <a href="{{ url_for('security_dashboard') }}">
+                Tải lại nhật ký
+            </a>
+        </nav>
+
+        <span class="badge">SECURITY MONITOR</span>
+        <h2>Nhật ký đăng nhập</h2>
+
+        <p class="security-note">
+            Thống kê toàn bộ nhật ký đã lưu.
+            Bảng hiển thị 100 sự kiện mới nhất.
+            Thời gian theo UTC, cộng 7 giờ để đổi sang giờ Việt Nam.
+        </p>
+
+        <section class="stats" aria-label="Thống kê sự kiện">
+            <div class="stat">
+                <span>Thành công</span>
+                <strong>{{ counts.get("success", 0) }}</strong>
+            </div>
+
+            <div class="stat">
+                <span>Thất bại</span>
+                <strong>{{ counts.get("failure", 0) }}</strong>
+            </div>
+
+            <div class="stat">
+                <span>Cảnh báo vượt ngưỡng</span>
+                <strong>{{ counts.get("alert", 0) }}</strong>
+            </div>
+
+            <div class="stat">
+                <span>Lượt thử bị chặn</span>
+                <strong>{{ counts.get("blocked", 0) }}</strong>
+            </div>
+        </section>
+
+        <div class="table-container">
+            <table>
+                <caption>
+                    Nhật ký xác thực và giới hạn đăng nhập
+                </caption>
+
+                <thead>
+                    <tr>
+                        <th scope="col">Thời gian UTC</th>
+                        <th scope="col">IP</th>
+                        <th scope="col">Username được nhập</th>
+                        <th scope="col">Sự kiện</th>
+                        <th scope="col">Lý do</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for item in events %}
+                        <tr>
+                            <td>{{ item["time_utc"] }}</td>
+                            <td>{{ item["ip"] }}</td>
+                            <td>{{ item["username"] }}</td>
+                            <td>
+                                <span class="event event-{{ item['event'] }}">
+                                    {{ item["event"] }}
+                                </span>
+                            </td>
+                            <td>{{ item["reason"] }}</td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="5">
+                                Chưa có sự kiện.
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <p class="security-note">
+            success: đăng nhập thành công ·
+            failure: sai thông tin đăng nhập ·
+            alert: vượt ngưỡng ·
+            blocked: thử đăng nhập khi đang bị chặn.
+        </p>
+
+        <p class="security-note">
+            Cảnh báo là dấu hiệu cần kiểm tra, không khẳng định có tấn công.
+            Username được nhập không chứng minh danh tính người thực hiện.
+        </p>
+    </main>
+</body>
+</html>

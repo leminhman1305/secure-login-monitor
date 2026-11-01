@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Login Monitor</title>
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+</head>
+<body>
+    <main class="layout">
+        <section class="intro">
+            <span class="badge">AUTHENTICATION & SECURITY LAB</span>
+
+            <h1>Đăng nhập.<br>Quan sát.<br>Bảo vệ.</h1>
+
+            <p class="description">
+                Dự án thực hành xác thực người dùng và phát hiện
+                hành vi đăng nhập đáng ngờ.
+            </p>
+
+            <div class="feature">
+                <span class="dot"></span>
+                <span>Lộ trình: Argon2id, session và phát hiện brute force</span>
+            </div>
+
+            <p class="lab-note">
+                Môi trường thực hành local.
+                Hãy dùng tài khoản và mật khẩu giả để thử nghiệm.
+            </p>
+        </section>
+
+        <section class="card">
+           
+
+            <h2>Chào mừng trở lại</h2>
+            <p class="subtitle">Nhập thông tin tài khoản để tiếp tục.</p>
+
+            {% if message %}
+                <div class="notice" role="status">{{ message }}</div>
+            {% endif %}
+
+            <form method="post">
+                <input
+                    type="hidden"
+                    name="csrf_token"
+                    value="{{ csrf_token() }}"
+                >
+
+                <label for="username">Tên đăng nhập</label>
+                <input
+                    id="username"
+                    name="username"
+                    type="text"
+                    placeholder="Nhập tên đăng nhập"
+                    autocomplete="username"
+                    maxlength="64"
+                    required
+                >
+
+                <label for="password">Mật khẩu</label>
+                <input
+                    id="password"
+                    name="password"
+                    type="password"
+                    placeholder="Nhập mật khẩu"
+                    autocomplete="current-password"
+                    maxlength="128"
+                    required
+                >
+
+                <label class="checkbox">
+                    <input type="checkbox" id="show-password">
+                    <span>Hiện mật khẩu</span>
+                </label>
+
+                <button type="submit">
+                    Đăng nhập <span aria-hidden="true">→</span>
+                </button>
+            </form>
+
+            <p class="footer">
+                Đã bật xác thực và giới hạn đăng nhập sai
+            </p>
+        </section>
+    </main>
+
+    <script>
+        const toggle = document.getElementById("show-password");
+        const password = document.getElementById("password");
+
+        toggle.addEventListener("change", () => {
+            password.type = toggle.checked ? "text" : "password";
+        });
+    </script>
+</body>
+</html>

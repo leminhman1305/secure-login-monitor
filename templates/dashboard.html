@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trang tài khoản</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+</head>
+<body>
+    <main class="layout">
+        <section class="intro">
+            <span class="badge">AUTHENTICATION LAB</span>
+
+            <h1>Đăng nhập<br>thành công.</h1>
+
+            <p class="description">
+                Chào <strong>{{ user["username"] }}</strong>,
+                bạn đang ở trang yêu cầu đăng nhập.
+            </p>
+        </section>
+
+        <section class="card">
+            <h2>Phiên đăng nhập</h2>
+
+            <p class="subtitle">
+                Mật khẩu đã được xác minh bằng Argon2id.
+                Bạn có thể đăng xuất để kết thúc phiên.
+            </p>
+            <p>
+                <a href="{{ url_for('security_dashboard') }}"
+                style="color: #67e8f9;">
+                    Xem nhật ký bảo mật →
+                </a>
+            </p>
+            <form method="post" action="{{ url_for('logout') }}">
+                <input
+                    type="hidden"
+                    name="csrf_token"
+                    value="{{ csrf_token() }}"
+                >
+
+                <button type="submit">
+                    Đăng xuất <span aria-hidden="true">→</span>
+                </button>
+            </form>
+        </section>
+    </main>
+</body>
+</html>
